@@ -50,6 +50,15 @@ class Query(BaseModel):
 def root():
     return {"status": "Agent is running"}
 
+@app.get("/ping")
+def ping():
+    return {"status": "ok"}
+
+
+@app.post("/invocations")
+def invocations(query: Query):
+    return invoke(query)
+
 @app.post("/invoke")
 def invoke(query: Query):
     result = agent.invoke({
