@@ -10,7 +10,6 @@ from langchain.agents import create_agent
 from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun          # + added WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper                        # + added
 from langchain_core.tools import tool      
-from langfuse.langchain import CallbackHandler                                          # + added
 import numexpr                                                                       # + added
 
 app = FastAPI()
@@ -55,9 +54,6 @@ def root():
 def invoke(query: Query):
     result = agent.invoke({
         "messages": [("user", query.message)]
-    },
-    config={
-        "callbacks": [CallbackHandler()]
     })
 
     return {
