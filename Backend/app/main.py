@@ -14,13 +14,17 @@ import numexpr                                                                  
 
 app = FastAPI()
 
+openrouter_key = os.environ.get("OPENROUTER_API_KEY")
+
+if not openrouter_key:
+    raise ValueError("OPENROUTER_API_KEY environment variable is not set!")
+
 llm = ChatOpenAI(
-    base_url="https://agent-tracing-demo-resource.services.ai.azure.com/api/projects/agent-tracing-demo/openai/v1",
-    api_key=os.environ.get("MICROSOFT_FOUNDRY"),
-    model="gpt-5-mini",
+    base_url="https://openrouter.ai/api/v1",
+    api_key=openrouter_key,
+    model="nvidia/nemotron-3-ultra-550b-a55b:free",
     temperature=0,
 )
-
 # Tool 1: web search
 search = DuckDuckGoSearchRun()
 
@@ -39,7 +43,7 @@ def calculator(expression: str) -> str:
 
 agent = create_agent(
     model=llm,
-    tools=[search, wikipedia, calculator]         
+    tools=[search,wikipedia, calculator]         
 )
 
 class Query(BaseModel):
@@ -54,10 +58,10 @@ def root():
 def ping():
     return {"status": "ok"}
 
-
 @app.post("/invocations")
 def invocations(query: Query):
     return invoke(query)
+
 
 @app.post("/invoke")
 def invoke(query: Query):
